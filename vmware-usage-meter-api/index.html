@@ -1,0 +1,563 @@
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>VMware Usage Meter API</title>
+    <meta name="description" content="">
+
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/main.css?v=99eecd12bd">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Crimson+Text:400,400italic,700,700italic">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:700,300,300italic,700italic">
+
+    <link rel="canonical" href="http://blog.briankmarsh.com/vmware-usage-meter-api/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <link rel="amphtml" href="http://blog.briankmarsh.com/vmware-usage-meter-api/amp/">
+    
+    <meta property="og:site_name" content="Adventures in Tech">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="VMware Usage Meter API">
+    <meta property="og:description" content="Usage meter is a rather ugly piece of VMware software whose sole purpose is to monitor memory allocation and reservations. It is tied to licensing costs for some implementations (e.g. Service Providers). Unfortunately, it's also a major PITA to use. Luckily, there is an API! As we have several">
+    <meta property="og:url" content="http://blog.briankmarsh.com/vmware-usage-meter-api/">
+    <meta property="article:published_time" content="2014-05-13T14:40:20.000Z">
+    <meta property="article:modified_time" content="2014-05-27T23:24:38.000Z">
+    <meta property="article:tag" content="VMware">
+    <meta property="article:tag" content="PowerShell">
+    <meta property="article:tag" content="API">
+    <meta property="article:tag" content="Usage Meter">
+    
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="VMware Usage Meter API">
+    <meta name="twitter:description" content="Usage meter is a rather ugly piece of VMware software whose sole purpose is to monitor memory allocation and reservations. It is tied to licensing costs for some implementations (e.g. Service Providers). Unfortunately, it's also a major PITA to use. Luckily, there is an API! As we have several">
+    <meta name="twitter:url" content="http://blog.briankmarsh.com/vmware-usage-meter-api/">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Brian Marsh">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="VMware, PowerShell, API, Usage Meter">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Adventures in Tech",
+        "logo": "http://blog.briankmarsh.com/content/images/2016/10/me-alana_sqr.png"
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Brian Marsh",
+        "image": {
+            "@type": "ImageObject",
+            "url": "//www.gravatar.com/avatar/5a6084d9aae0913236bc5ca2dffb0714?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
+        },
+        "url": "http://blog.briankmarsh.com/author/brian/",
+        "sameAs": []
+    },
+    "headline": "VMware Usage Meter API",
+    "url": "http://blog.briankmarsh.com/vmware-usage-meter-api/",
+    "datePublished": "2014-05-13T14:40:20.000Z",
+    "dateModified": "2014-05-27T23:24:38.000Z",
+    "keywords": "VMware, PowerShell, API, Usage Meter",
+    "description": "Usage meter is a rather ugly piece of VMware software whose sole purpose is to monitor memory allocation and reservations. It is tied to licensing costs for some implementations (e.g. Service Providers). Unfortunately, it&#x27;s also a major PITA to use. Luckily, there is an API! As we have several",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "http://blog.briankmarsh.com"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.11">
+    <link rel="alternate" type="application/rss+xml" title="Adventures in Tech" href="http://blog.briankmarsh.com/rss/">
+</head>
+
+
+<body class="post-template tag-vmware tag-powershell tag-api tag-usage-meter menu-toggle--posts">
+
+
+    <!--[if lt IE 10]>
+    <div class="browser-overlay">
+      <h1><a href="http://blog.briankmarsh.com">Adventures in Tech</a></h1>
+      <p class="browserupgrade">Hey there, it looks like you're using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    </div>
+<![endif]-->
+
+
+        <a class="menu-toggle icon-menu" href="index.html#">
+            <div class="bars">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+            <span class="menu-word">Menu</span>
+        </a>
+
+
+    <div class="nav">
+    <h3 class="nav__title">Menu</h3>
+    <a href="index.html#" class="nav__close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav__home" role="presentation"><a href="http://blog.briankmarsh.com/" class="nav__link">Home</a></li>
+    </ul>
+
+<div class="recent-articles">
+  <h3 class="recent-articles__title">Recent Articles</h3>
+  <div class="recent-articles__content loading">
+    <div class="loader">
+      <i class="fa fa-spinner fa-spin"></i>
+    </div>
+  </div>
+</div>
+
+
+    <div class="subscribe">
+      <a class="subscribe-button" href="http://blog.briankmarsh.com/rss/">Subscribe</a>
+    </div>
+    
+
+</div>
+<span class="nav__cover"></span>
+
+
+    <div class="site-wrapper">
+
+
+        
+
+
+<!-- <header class="main-header post-head no-cover">
+</header> -->
+
+<main class="content" role="main">
+    <article class="post tag-vmware tag-powershell tag-api tag-usage-meter">
+
+        <header class="post__header">
+            <h2 class="post__title">VMware Usage Meter API</h2>
+            <section class="post__meta">
+                <time class="post__date" datetime="2014-05-13">13 May 2014</time>
+            </section>
+        </header>
+
+
+        <section class="post__content">
+            <p>Usage meter is a rather ugly piece of VMware software whose sole purpose is to monitor memory allocation and reservations. It is tied to licensing costs for some implementations (e.g. Service Providers). Unfortunately, it's also a major PITA to use.</p>
+
+<p>Luckily, there is an API! As we have several different Usage Meter instances at each of our datacenters, I opted to make things easier with a site parameter. Depending on the site, the server/authToken are auto-populated. In the event that a different UM server needs to be targeted, the server/authToken can be provided via commandline.</p>
+
+<p>A few key notes: Usage Meter time is in UTC, and in the specific format yyyyMMddHH (e.g. April 1st 2014 at noon UTC is: 2014040112).</p>
+
+<p>On a side note, I'm looking into creating my own syntax higlighting extension for PowerShell as <a href="http://prismjs.com/">Prism</a> doesn't appear to natively support it.</p>
+
+<hr>
+
+<pre><code class="language-powershell">&lt;#  
+    .SYNOPSIS
+    Uses the VMware Usage Meter API to return the contents of a specified report, 
+    optionally bounded by date/time, and at a particular Gen2 site.
+
+    .DESCRIPTION
+    Returns a variety of reports from VMware Usage Meter based on provided report number,
+    for the specified timeframe (dateFrom/dateTo) in UTC, for the given Gen 2 site.
+
+    Reports are selected based on number:
+    1  "Detailed Billing Report"
+    2  "Detailed Usage Report"
+    3  "Customer Summary Report"
+    4  "License Summary Report"
+    5  "Monthly Usage Report"
+    6  "Customer Product Report"
+    17 "Bundle Report"
+
+    .EXAMPLE
+    .\get-UsageMeterReport.ps1 -site JKL -dateFrom 2014041720 -dateTo 2014041721 -reportType 2
+
+    Retrieves the Detailed Usage Report from April 17, 2014 8PM UTC - April 17, 2014 at 9PM UTC
+
+    .PARAMETER dateFrom
+    Date/Time UTC in format yyyyMMddHH  - e.g. 2014041720 for April 17, 2014 at 8PM UTC (3PM EST) for start of report
+
+    .PARAMETER dateTo
+    Date/Time UTC in format yyyyMMddHH  - e.g. 2014041721 for April 17, 2014 at 9PM UTC (4PM EST) for end of report
+
+    .PARAMETER reportType
+    Report number based on table below
+    1  "Detailed Billing Report"
+    2  "Detailed Usage Report"
+    3  "Customer Summary Report"
+    4  "License Summary Report"
+    5  "Monthly Usage Report"
+    6  "Customer Product Report"
+    17 "Bundle Report"
+
+    .PARAMETER site
+    Specifies which site to target (ABC, DEF, GHI, JKL, MNO)
+
+    .PARAMETER raw
+    If provided, raw output from the API call will be output
+
+    .PARAMETER server
+    Target Usage Meter Server (used only when manually specifying a UM server that
+    differs from the site UMs)
+
+    .PARAMETER authToken
+    Target Authorization Token for the specified UM server (only used when manually
+    specifying a UM server that differs from the site UMs)
+
+    .NOTES
+    Author: Brian Marsh
+    Version: 1.0
+#&gt;
+
+
+[CmdletBinding()]
+param( $dateFrom,  
+       $dateTo,
+       [Parameter(Mandatory=$true)]
+       [ValidateSet("1","2","3","4","5","6","17")]
+       $reportType = "2",
+       [Parameter(Mandatory=$true)]
+       [ValidateSet("ABC","DEF","GHI","JKL","MNO")] 
+       $site,
+       [switch] $raw,
+       $server,
+       $authToken
+
+     )
+
+BEGIN{
+
+    # If we aren't provided a server and authToken via commandline input
+    if (!($server -and $authToken)){
+        # Set site specific variables for Usage Meter URL &amp; User Token
+        switch ($site){
+            "ABC" {
+                    $server    = "https://ABCUM:8443/um/"
+                    $authToken = "TOKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXABC"
+                  }
+            "DEF" {
+                    $server    = "https://DEFUM:8443/um/"
+                    $authToken = "TOKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXDEF"
+                  }
+            "GHI" {
+                    $server    = "https://GHIUM:8443/um/"
+                    $authToken = "TOKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXGHI"
+                  }
+            "JKL" {
+                    $server    = "https://JKLUM:8443/um"
+                    $authToken = "TOKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXJKL"
+                  }
+            "MNO" {
+                    $server    = "https://MNOUM:8443/um/"
+                    $authToken = "TOKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXMNO"
+                  }
+        }
+    }
+
+# Enable self signed certs
+add-type @"  
+    using System.Net;
+    using System.Security.Cryptography.X509Certificates;
+    public class TrustAllCertsPolicy : ICertificatePolicy {
+        public bool CheckValidationResult(
+            ServicePoint srvPoint, X509Certificate certificate,
+            WebRequest request, int certificateProblem) {
+            return true;
+        }
+    }
+"@
+[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
+
+}
+PROCESS{
+
+    # Compose Request URL
+    $requestURL = "$server/api/report/$reportType"
+
+    # If a specified dateFrom/dateTo have been provided, add them to the Request URL
+    if ($dateFrom -and $dateTo){
+        $requestURL += "?dateFrom=$dateFrom&amp;dateTo=$dateTo"
+    }
+
+    # Call the API
+    $result   = invoke-webrequest -uri $requestURL -Headers @{"x-usagemeter-authorization"="$authToken"} | select content
+
+    # Split the single string based on new lines
+    $resultNL = $result.Content.split("`n")
+
+    # If we're not doing raw output, attempt to clean up and put into an array of custom objects using ConvertFrom-Csv
+    if (!($raw)){
+        switch($reportType){
+            1 {
+                # Specify header fields for each column
+                $csvHeader = "Time","Host DNS Name","Host RAM (GB)","vSphere License","VM RAM (MB)",
+                             "Billing RAM (MB)","VM CPUs","VM Instance UUID"
+
+                # Strip out the first 9 lines (use -raw for full details), treat the remaining as a tab delimited csv
+                $csv = ConvertFrom-Csv $resultNL[9..($resultNL.Length -3)] -Delimiter "`t" -Header $csvHeader
+                $out = $csv
+            }
+            2{
+                # Specify header fields for each column
+                $csvheader = "Time","Customer","Host DNS Name","Host RAM (GB)","vSphere License","VM VC Name",
+                              "VM Hostname","VM RAM (MB)","Billing RAM (MB)","VM CPUs","VM Instance UUID"
+
+                # Strip out the first 9 lines (use -raw for full details), treat the remaining as a tab delimited csv
+                $csv = ConvertFrom-Csv $resultNL[9..($resultNL.Length -3)] -Delimiter "`t" -Header $csvHeader
+
+                # Sometimes the csv object has weird entries. ProblemVMs is designed to handle that
+                $problemVMs = @()
+
+                $csv | %{
+                    $thisVM = $_
+
+                    # Try to calculate the RAM Billing percent based on Billing RAM and VM RAM
+                    try{
+                        $BillingPercent = [Math]::Round(($thisVM."Billing RAM (MB)"/$thisVM."VM RAM (MB)" * 100),2)
+                    } catch {
+                        # If there's a problem (e.g. divide by zero/invalid numbers), add this VM to the list
+                        Write-Error "Problem calculating $thisVM billing percent: $($error[1].Exception)"
+                        $problemVMs += $thisvm
+                    }
+
+                    # Add the new Billing Percent field to this object
+                    $_ | Add-Member -MemberType NoteProperty -Name "Billing Percent" -Value $BillingPercent -Force
+                }
+                $out = $csv
+            }
+            3 {
+                # Specify header fields for each column
+                $csvheader = "Customer","Country","Postal","License Type","Category","Billable","Billed vRAM (GB-Hours)",
+                             "Capped Billed vRAM (GB-Hours)"
+
+                # Strip out the first 9 lines (use -raw for full details), treat the remaining as a tab delimited csv
+                $csv = ConvertFrom-Csv $resultNL[9..($resultNL.Length -3)] -Delimiter "`t" -Header $csvHeader
+                $out = $csv
+            }
+            4 {
+                # Specify header fields for each column
+                $csvHeader = "Billable","Category","License Type","Billed vRAM (GB-Hours)","Capped Billed vRAM (GB-Hours)"
+
+                # Strip out the first 9 lines (use -raw for full details), treat the remaining as a tab delimited csv
+                $csv = ConvertFrom-Csv $resultNL[9..($resultNL.Length -3)] -Delimiter "`t" -Header $csvHeader
+                $out = $csv
+            }
+            5 {
+                # Specify header fields for each column
+                $csvHeader = "Product","Unit of Measure","Units to be Reported"
+
+                # Strip out the first 9 lines (use -raw for full details), treat the remaining as a tab delimited csv
+                $csv = ConvertFrom-Csv $resultNL[9..($resultNL.Length -3)] -Delimiter "`t" -Header $csvHeader
+                $out = $csv
+            }
+            17 {
+                # Specify header fields for each column
+                $csvHeader = "vCloud Service Provider Bundle","Capped Billed vRAM (GB-Hours)","Hours","Average"
+
+                # Strip out the first 9 lines (use -raw for full details), treat the remaining as a tab delimited csv
+                $csv = ConvertFrom-Csv $resultNL[9..($resultNL.Length -3)] -Delimiter "`t" -Header $csvHeader
+                $out = $csv
+            }
+        }
+    } else {
+        # Raw output was requested, give the people what they want
+        $out = $resultNL
+    }
+}
+END{  
+    # Last minute debuging (useful for that problemVMs checking)
+    Write-Debug "Anything Else?"
+    write-output $out
+}
+</code></pre>
+        </section>
+
+<div class="tags">
+Tagged in: <a href="../tag/vmware/">VMware</a>, <a href="../tag/powershell/">PowerShell</a>, <a href="../tag/api/">API</a>, <a href="../tag/usage-meter/">Usage Meter</a>
+</div>
+
+        <section class="share">
+
+            <a class="icon-twitter icon-share" href="https://twitter.com/share?text=VMware%20Usage%20Meter%20API&amp;url=http://blog.briankmarsh.com/vmware-usage-meter-api/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+    <span class="hidden">Twitter</span>
+
+    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="34px" height="34px" viewbox="289 289 34 34" enable-background="new 289 289 34 34" xml:space="preserve">
+    <g>
+      <g>
+        <path d="M312.861,302.819c0-0.162-0.003-0.321-0.011-0.48c0.691-0.515,1.291-1.159,1.765-1.896
+          c-0.634,0.285-1.314,0.476-2.03,0.556c0.729-0.45,1.29-1.168,1.555-2.031c-0.684,0.415-1.44,0.711-2.244,0.865
+          c-0.645-0.733-1.563-1.2-2.581-1.217c-1.951-0.032-3.534,1.618-3.534,3.685c0,0.293,0.031,0.579,0.092,0.854
+          c-2.94-0.189-5.545-1.719-7.288-4.026c-0.304,0.553-0.479,1.198-0.479,1.891c0,1.309,0.624,2.473,1.573,3.159
+          c-0.581-0.026-1.125-0.202-1.602-0.49c0,0.016,0,0.032,0,0.048c0,1.83,1.219,3.363,2.836,3.721
+          c-0.297,0.084-0.61,0.128-0.931,0.127c-0.229-0.002-0.449-0.026-0.665-0.073c0.449,1.5,1.755,2.595,3.302,2.631
+          c-1.21,1.004-2.735,1.604-4.39,1.599c-0.285,0-0.567-0.019-0.844-0.054c1.565,1.074,3.422,1.699,5.419,1.699
+          C309.307,313.386,312.861,307.728,312.861,302.819z"></path>
+        <path d="M322,306c0-8.836-7.164-16-16-16c-8.836,0-16,7.164-16,16c0,8.836,7.164,16,16,16C314.836,322,322,314.836,322,306z
+           M291.455,306c0-8.034,6.512-14.545,14.545-14.545c8.033,0,14.546,6.512,14.546,14.545c0,8.033-6.513,14.546-14.546,14.546
+          C297.966,320.546,291.455,314.033,291.455,306z"></path>
+      </g>
+    </g>
+    </svg>
+</a>
+
+<a class="icon-facebook icon-share" href="https://www.facebook.com/sharer/sharer.php?u=http://blog.briankmarsh.com/vmware-usage-meter-api/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+    <span class="hidden">Facebook</span>
+    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="34px" height="34px" viewbox="289 289 34 34" enable-background="new 289 289 34 34" xml:space="preserve">
+    <g>
+      <g>
+        <path d="M322,306c0-8.836-7.164-16-16-16c-8.836,0-16,7.164-16,16c0,8.836,7.164,16,16,16C314.836,322,322,314.836,322,306z
+           M291.455,306c0-8.034,6.512-14.545,14.545-14.545c8.033,0,14.546,6.512,14.546,14.545c0,8.033-6.513,14.546-14.546,14.546
+          C297.966,320.546,291.455,314.033,291.455,306z"></path>
+        <path d="M306.614,315.235V306h3.047l0.481-3.061h-3.528v-1.534c0-0.799,0.262-1.561,1.407-1.561h2.291v-3.054h-3.252
+          c-2.735,0-3.481,1.8-3.481,4.296v1.852h-1.876V306h1.876v9.235H306.614L306.614,315.235z"></path>
+      </g>
+    </g>
+    </svg>
+</a>
+
+<a class="icon-google-plus icon-share" href="https://plus.google.com/share?url=http://blog.briankmarsh.com/vmware-usage-meter-api/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+    <span class="hidden">Google+</span>
+
+    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="34px" height="34px" viewbox="289 289 34 34" enable-background="new 289 289 34 34" xml:space="preserve">
+    <g>
+      <g>
+        <path d="M308.256,311.033c0-1.57-0.909-2.344-1.91-3.186l-0.819-0.638c-0.25-0.203-0.591-0.477-0.591-0.977
+          s0.342-0.819,0.637-1.114c0.955-0.75,1.91-1.546,1.91-3.229c0-1.729-1.092-2.639-1.614-3.071l0,0h1.409l1.455-0.819h-4.686
+          c-1.228,0-2.773,0.182-4.071,1.251c-0.977,0.841-1.455,2.001-1.455,3.047c0,1.773,1.365,3.571,3.775,3.571
+          c0.228,0,0.477-0.023,0.729-0.045c-0.113,0.273-0.227,0.5-0.227,0.887c0,0.704,0.364,1.138,0.682,1.547
+          c-1.022,0.068-2.934,0.182-4.343,1.046c-1.343,0.795-1.751,1.956-1.751,2.774c0,1.684,1.593,3.253,4.89,3.253
+          C306.186,315.331,308.256,313.17,308.256,311.033z M303.366,305.233c-1.956,0-2.844-2.525-2.844-4.048
+          c0-0.592,0.114-1.205,0.5-1.683c0.364-0.455,1.001-0.752,1.593-0.752c1.888,0,2.865,2.548,2.865,4.185
+          c0,0.411-0.045,1.138-0.568,1.661C304.548,304.96,303.935,305.232,303.366,305.233z M303.389,314.375
+          c-2.434,0-4.003-1.159-4.003-2.773s1.456-2.16,1.957-2.342c0.956-0.318,2.183-0.365,2.388-0.365c0.227,0,0.34,0,0.522,0.023
+          c1.729,1.228,2.479,1.842,2.479,3.002C306.731,313.329,305.572,314.375,303.389,314.375z"></path>
+        <polygon points="308.461,306.615 310.924,306.615 310.924,309.076 312.154,309.076 312.154,306.615 314.615,306.615 
+          314.615,305.385 312.154,305.385 312.154,302.924 310.924,302.924 310.924,305.385 308.461,305.385     "></polygon>
+        <path d="M322,306c0-8.836-7.164-16-16-16c-8.836,0-16,7.164-16,16c0,8.836,7.164,16,16,16C314.836,322,322,314.836,322,306z
+           M291.455,306c0-8.034,6.512-14.545,14.545-14.545c8.033,0,14.546,6.512,14.546,14.545c0,8.033-6.513,14.546-14.546,14.546
+          C297.966,320.546,291.455,314.033,291.455,306z"></path>
+      </g>
+    </g>
+    </svg>
+</a>
+
+
+
+<a class="icon-tumblr icon-share" href="http://www.tumblr.com/share/link?url=http://blog.briankmarsh.com/vmware-usage-meter-api/&amp;name=VMware%20Usage%20Meter%20API" onclick="window.open(this.href, 'tumblr-share', 'width=490,height=530');return false;">
+    <span class="hidden">Tumblr</span>
+
+    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="34px" height="34px" viewbox="308 308 34 34" enable-background="new 308 308 34 34" xml:space="preserve">
+    <g>
+      <path d="M325.98,319.787v-4.009h-2.587c-0.059,0.149-0.089,0.324-0.089,0.504c-0.028,0.087-0.058,0.15-0.058,0.239
+        c-0.268,1.483-1.039,2.523-2.349,3.089c-0.386,0.177-0.741,0.205-1.127,0.177v3.235h1.901c0.03,4.546,0.03,6.892,0.03,7.01
+        c0,0.09,0,0.179,0,0.271c0.238,1.986,1.276,3.176,3.119,3.621c0.741,0.208,1.543,0.297,2.345,0.297
+        c1.039-0.029,2.051-0.207,3.062-0.535v-3.8c-0.594,0.176-1.132,0.325-1.604,0.472c-0.923,0.27-1.693,0.092-2.32-0.502
+        c-0.058-0.09-0.147-0.209-0.178-0.327c-0.087-0.476-0.145-0.979-0.145-1.457v-5.049h4.125v-3.235H325.98z"></path>
+    </g>
+    <g>
+      <g>
+        <path d="M341,325c0-8.836-7.164-16-16-16s-16,7.164-16,16c0,8.836,7.164,16,16,16S341,333.836,341,325z M310.455,325
+          c0-8.034,6.512-14.545,14.545-14.545s14.546,6.512,14.546,14.545c0,8.033-6.513,14.546-14.546,14.546S310.455,333.033,310.455,325
+          z"></path>
+      </g>
+    </g>
+    </svg>
+
+
+</a>
+
+        </section>
+
+
+
+        <section class="post__author clearfix">
+
+
+            <figure class="author__image">
+                <a class="img" href="../author/brian/" style="background-image: url(http://www.gravatar.com/avatar/5a6084d9aae0913236bc5ca2dffb0714?s&amp;)"><span class="hidden">Brian Marsh's Picture</span></a>
+            </figure>
+
+
+
+
+
+
+            <section class="author__bio">
+                <h4><a href="../author/brian/">Brian Marsh</a></h4>
+
+                    <p>Read <a href="../author/brian/">more posts</a> by this author.</p>
+                <div class="author__meta">
+                    
+                    
+                </div>
+            </section>
+
+
+
+        </section>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'example'; // required: replace example with your forum shortname
+    var disqus_identifier = '';
+ 
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a> 
+
+    </article>
+</main>
+
+<aside class="read-next clearfix">
+
+    <a class="read-next-story next" href="../dropbox-for-multi-computer-settings-syncing/">
+
+        <section class="post">
+            <h2>Dropbox for Multi-Computer Settings Syncing</h2>
+            <p>From automated picture backup from my Android devices to sharing Google Sketchup designs with friends, I've used Dropbox for…</p>
+        </section>
+    </a>
+
+    <a class="read-next-story prev" href="../ruby-soap-and-savon/">
+        <section class="post">
+            <h2>Ruby, SOAP, and savon</h2>
+            <p>I have to interact with a SOAP API to provision resources. This is a bit of a pain because…</p>
+        </section>
+    </a>
+</aside>
+
+
+
+    </div>
+
+
+    <footer class="site-footer clearfix">
+        <section class="site-footer__block">
+            <div class="copyright"><a href="http://escritor.ozywuli.com">Escritor</a> © 2016 | Proudly published with <a href="https://ghost.org">Ghost</a></div>
+            <div class="madeby">Made by <a href="http://ozywuli.com">Ozy Wu-Li</a></div>
+
+
+        </section>
+    </footer>
+
+    
+
+
+    <script type="text/javascript" src="../assets/js/main.js?v=99eecd12bd"></script>
+
+
+</body>

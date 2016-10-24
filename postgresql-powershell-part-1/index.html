@@ -1,0 +1,621 @@
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>PostgreSQL + PowerShell</title>
+    <meta name="description" content="">
+
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" href="../favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="../assets/css/main.css?v=99eecd12bd">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Crimson+Text:400,400italic,700,700italic">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:700,300,300italic,700italic">
+
+    <link rel="canonical" href="http://blog.briankmarsh.com/postgresql-powershell-part-1/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <link rel="amphtml" href="http://blog.briankmarsh.com/postgresql-powershell-part-1/amp/">
+    
+    <meta property="og:site_name" content="Adventures in Tech">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="PostgreSQL + PowerShell">
+    <meta property="og:description" content="I've been absent for quite a while. The home lab automation has taken a back seat to unpacking and setting up IKEA flat-pack furniture.  That is still ongoing, but let's focus on some more fun things. I need to get details from our UCS Environment into an inventory database -">
+    <meta property="og:url" content="http://blog.briankmarsh.com/postgresql-powershell-part-1/">
+    <meta property="article:published_time" content="2016-01-14T23:16:01.000Z">
+    <meta property="article:modified_time" content="2016-10-07T13:00:52.000Z">
+    <meta property="article:tag" content="PowerShell">
+    <meta property="article:tag" content="Postgres">
+    <meta property="article:tag" content="Inventory Database">
+    <meta property="article:tag" content="Cisco">
+    
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="PostgreSQL + PowerShell">
+    <meta name="twitter:description" content="I've been absent for quite a while. The home lab automation has taken a back seat to unpacking and setting up IKEA flat-pack furniture.  That is still ongoing, but let's focus on some more fun things. I need to get details from our UCS Environment into an inventory database -">
+    <meta name="twitter:url" content="http://blog.briankmarsh.com/postgresql-powershell-part-1/">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Brian Marsh">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="PowerShell, Postgres, Inventory Database, Cisco">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Adventures in Tech",
+        "logo": "http://blog.briankmarsh.com/content/images/2016/10/me-alana_sqr.png"
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Brian Marsh",
+        "image": {
+            "@type": "ImageObject",
+            "url": "//www.gravatar.com/avatar/5a6084d9aae0913236bc5ca2dffb0714?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
+        },
+        "url": "http://blog.briankmarsh.com/author/brian/",
+        "sameAs": []
+    },
+    "headline": "PostgreSQL + PowerShell",
+    "url": "http://blog.briankmarsh.com/postgresql-powershell-part-1/",
+    "datePublished": "2016-01-14T23:16:01.000Z",
+    "dateModified": "2016-10-07T13:00:52.000Z",
+    "keywords": "PowerShell, Postgres, Inventory Database, Cisco",
+    "description": "I&#x27;ve been absent for quite a while. The home lab automation has taken a back seat to unpacking and setting up IKEA flat-pack furniture.  That is still ongoing, but let&#x27;s focus on some more fun things. I need to get details from our UCS Environment into an inventory database -",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "http://blog.briankmarsh.com"
+    }
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.11">
+    <link rel="alternate" type="application/rss+xml" title="Adventures in Tech" href="http://blog.briankmarsh.com/rss/">
+</head>
+
+
+<body class="post-template tag-powershell tag-postgres tag-inventory-database tag-cisco menu-toggle--posts">
+
+
+    <!--[if lt IE 10]>
+    <div class="browser-overlay">
+      <h1><a href="http://blog.briankmarsh.com">Adventures in Tech</a></h1>
+      <p class="browserupgrade">Hey there, it looks like you're using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    </div>
+<![endif]-->
+
+
+        <a class="menu-toggle icon-menu" href="index.html#">
+            <div class="bars">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+            <span class="menu-word">Menu</span>
+        </a>
+
+
+    <div class="nav">
+    <h3 class="nav__title">Menu</h3>
+    <a href="index.html#" class="nav__close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+            <li class="nav__home" role="presentation"><a href="http://blog.briankmarsh.com/" class="nav__link">Home</a></li>
+    </ul>
+
+<div class="recent-articles">
+  <h3 class="recent-articles__title">Recent Articles</h3>
+  <div class="recent-articles__content loading">
+    <div class="loader">
+      <i class="fa fa-spinner fa-spin"></i>
+    </div>
+  </div>
+</div>
+
+
+    <div class="subscribe">
+      <a class="subscribe-button" href="http://blog.briankmarsh.com/rss/">Subscribe</a>
+    </div>
+    
+
+</div>
+<span class="nav__cover"></span>
+
+
+    <div class="site-wrapper">
+
+
+        
+
+
+<!-- <header class="main-header post-head no-cover">
+</header> -->
+
+<main class="content" role="main">
+    <article class="post tag-powershell tag-postgres tag-inventory-database tag-cisco">
+
+        <header class="post__header">
+            <h2 class="post__title">PostgreSQL + PowerShell</h2>
+            <section class="post__meta">
+                <time class="post__date" datetime="2016-01-14">14 January 2016</time>
+            </section>
+        </header>
+
+
+        <section class="post__content">
+            <p>I've been absent for quite a while. The home lab automation has taken a back seat to unpacking and setting up IKEA flat-pack furniture. </p>
+
+<p>That is still ongoing, but let's focus on some more fun things. I need to get details from our UCS Environment into an inventory database - this database will be used to compare to the Cisco Compatibility Matrix and determine the potential impact of future upgrades. This will expand beyond UCS (and into VMware) - so leveraging my past Excel reports will not be powerful enough.</p>
+
+<p>Initially, I'm looking at leveraging PostgreSQL because:</p>
+
+<ul>
+<li>Free</li>
+<li>Plethora of information on the inter-web-nets</li>
+<li>It's new to me (and who doesn't like learning about new stuff?)</li>
+<li>I've been told I have to use PostgreSQL by our DB team (rendering the prior three points somewhat moot).</li>
+</ul>
+
+<h3 id="thebasics">The Basics</h3>
+
+<p>You need to install the PostgreSQL ODBC driver from <a href="http://www.postgresql.org/ftp/odbc/versions/msi/">here</a> - but apparently don't need to actually configure it for anything. PowerShell will leverage .NET to handle the connectivity details.</p>
+
+<p>My data is pulled from the <a href="https://communities.cisco.com/docs/DOC-52398">Cisco UCS HealthCheck v2.3</a>. Note that the script will connect to multiple UCS Managers (woo!), and will output an HTML (boo!). I realized that I didn't need all of the data the script gathers - there's quite a bit of performance metrics that take a ton of time to gather - so I stripped out the bits I didn't need/want and dumped the result prior to the script converting everything to HTML. </p>
+
+<p>My (somewhat embarrassing) hack job is available on <a href="https://gist.github.com/pezhore/d2816dab34a74c8fa6b6">Github</a> - note that once I get this database stuff figured out, I'll be reworking that gist to make it better.</p>
+
+<p>The object that is generated from the hacked together gist is a nested hash (several layers deep) Note that each of the inventory items (blades, IOMS, FIs, etc) are arrays. Additionally, when more than one UCS Manager is evaluated, <code>$ucsdatadump</code> has one key per UCSM. </p>
+
+<p>The data structure looks a little like this:</p>
+
+<pre><code>$ucsdatadump["UCS Manager1"]["Inventory"]["Blades"][0..n]
+                                                   [Dn]
+                                                   [Serial]
+                                                   [CIMC]
+                                                   [Memory]
+                                                   [Model]
+                                                   [Adapter]
+                                                            [Serial]
+                                                            [Name]
+                                                            [Model]
+                                                            ...
+                                                   ...
+                                         ["IOMs"][0..n]
+                                                 ["Dn"]
+                                                 ["Fabric_Id"]
+                                                 ["Backup_FW"]
+                                                 ["Running_FW"]
+                                                 ...
+                                         ["FIs"][0..n]
+                                                ["Dn"]
+                                                ["Kernel"]
+                                                ...
+                                         ["Chassis"][0..n]
+</code></pre>
+
+<p>Originally, I was put off by the hash(hash(hash(hash))), but it actually works quite well for programmatically dumping into a database. </p>
+
+<p>At this point, I'm only running the code via PowerShell ISE - not as a standalone ps1 file (although there's probably no good reason <em>not</em> to make this into a standalone script).</p>
+
+<h3 id="helperfunctions">Helper Functions</h3>
+
+<p>In order to create the database table's columns, I'll need to convert a passed object's PowerShell type to the corresponding postgreSQL type. The function below can be expanded as necessary, but for my reporting generally a text/int is sufficient. </p>
+
+<pre><code class="language-powershell">function Get-PostgresColumnType  
+{
+    [CmdletBinding()]
+    param ($obj)
+
+    # Get this object's PowerShell Type
+    if ($obj)
+    {
+        $TypeName = $obj.getType().Fullname
+    }
+
+    # Convert the PowerShell Type to PostGreSQL Column Type
+    switch -regex ($TypeName)
+    {
+        ".*String"    { $columnType = "text" }
+        ".*UInt32"    { $columnType = "bigint" }
+        ".*ArrayList" { Write-Verbose "ArrayList, cannot convert to PostgreSQL Type"}
+    }
+
+    # Return the column type
+    $columnType
+}
+</code></pre>
+
+<p>Next I need to interact with the database - functionality that can generally be broken into two categories: querying to get data, and querying to impact the database without expecting anything in return. I'm using two additional helper functions for this fundamental interaction - both leverage the newly installed ODBC driver. Note the default values provided for the db connection details (those would need to be updated)</p>
+
+<pre><code class="language-powershell"># This is for PostgreSQL queries that return stuff
+function Get-ODBCData{  
+    param(
+          [string]$query,
+          [string]$dbServer = "10.1.1.64",   # DB Server (either IP or hostname)
+          [string]$dbName   = "inventorydb", # Name of the database
+          [string]$dbUser   = "postgres",    # User we'll use to connect to the database/server
+          [string]$dbPass   = "postgres"     # Password for the $dbUser
+         )
+
+    $conn = New-Object System.Data.Odbc.OdbcConnection
+    $conn.ConnectionString = "Driver={PostgreSQL Unicode(x64)};Server=$dbServer;Port=5432;Database=$dbName;Uid=$dbUser;Pwd=$dbPass;"
+    $conn.open()
+    $cmd = New-object System.Data.Odbc.OdbcCommand($query,$conn)
+    $ds = New-Object system.Data.DataSet
+    (New-Object system.Data.odbc.odbcDataAdapter($cmd)).fill($ds) | out-null
+    $conn.close()
+    $ds.Tables[0]
+}
+}
+</code></pre>
+
+<pre><code class="language-powershell"># This is for PostgreSQL queries that don't return stuff
+function Set-ODBCData{  
+    param(
+          [string]$query,
+          [string]$query,
+          [string]$dbServer = "10.1.1.64",   # DB Server (either IP or hostname)
+          [string]$dbName   = "inventorydb", # Name of the database
+          [string]$dbUser   = "postgres",    # User we'll use to connect to the database/server
+          [string]$dbPass   = "postgres"     # Password for the $dbUser
+         )
+
+    $conn = New-Object System.Data.Odbc.OdbcConnection
+    $conn.ConnectionString= "Driver={PostgreSQL Unicode(x64)};Server=$dbServer;Port=5432;Database=$dbName;Uid=$dbUser;Pwd=$dbPass;"
+    $cmd = new-object System.Data.Odbc.OdbcCommand($query,$conn)
+    $conn.open()
+    try
+    {
+        $cmd.ExecuteNonQuery()
+    }
+    catch
+    {
+        Throw "BAD QUERY: $query"
+    }
+    $conn.close()
+}
+</code></pre>
+
+<h3 id="nittygritty">Nitty Gritty</h3>
+
+<p>There are two key things that need to be accomplished - the table needs to be created (if it isn't already), and the table needs to be populated/updated.</p>
+
+<p>Assuming our hash table layout specified above, we know that our various UCS Managers are specified as keys in <code>$ucsfulldump.keys</code> - we cycle through each UCS Manager with a foreach loop. We also know that there are various tables that we'd like to dump into the database (Blades, IOMs, FIs, etc) - specified as keys in <code>$ucsfulldump[$ucs].Inventory.keys</code> - so we loop through those too.</p>
+
+<pre><code class="language-powershell">foreach ($UCS in $ucsfulldump.keys)  
+{ 
+    # Get all the keys in this particular level of things
+    foreach ($tableName in $ucsfulldump[$ucs].Inventory.Keys)
+    { 
+      ...
+</code></pre>
+
+<h4 id="tablecreation">Table Creation</h4>
+
+<p>At this point in the script we are now at a level something similar to <code>$ucsfulldump[UCSM1].Inventory.[Blades]</code>, below which is an array of UCS Blade hashes. This information will be captured in a database table "UCS_Blades" that will be created if it doesn't exist already.</p>
+
+<p>Below, we first query the database to see if the table exists, if it doesn't - we need to create it. Pull the first object off of the array <code>$myObj</code> (which is in itself a hash), and begin to craft the create table PostgreSQL query - retrieving the column type from our helper function based on the <code>$myObj[$key]</code> PowerShell object type. Lastly, we try to create the table.</p>
+
+<pre><code class="language-powershell">if (!(Get-ODBCData -query "SELECT relname FROM pg_class WHERE relname='UCS_$tableName'"))  
+{
+    # Get the first object in this value's array
+    $myObj = $ucsfulldump[$ucs].Inventory["$tableName"] | select -first 1
+
+    # Build the CREATE TABLE query
+    $newTable = "CREATE TABLE `"UCS_$tableName`"(`n"
+    foreach ($key in $myObj.Keys)
+    {
+        $type = Get-PostgresColumnType $myObj["$key"]
+
+        if ($type)
+        {
+            $newTable += "`t`"$key`" $type,`n"
+        }
+
+    }
+    $newTable += "`t`"UCSM`" text,`n"
+    # Strip off the last new line and "," characters add a new line, close the parenthesis and add a semicolon
+    $newTable = $newTable.Substring(0, $newTable.Length -2)+"`n);"
+
+    # Create the new Table
+    try
+    {
+        $output = Set-ODBCData -query $newTable
+    }
+    catch
+    {
+        Write-Host -ForegroundColor Red "ERROR! $($_.Exception)"
+    }
+}
+</code></pre>
+
+<p>On a side note, I'm stoked about this script - but I'm super proud of this particular bit of logic. If an additional inventory hash is added, the code does not need to be altered in order to create a new table. Likewise, I can use this code for other hashtable objects (if properly created) to create new tables - all without hardcoding practically anything - save for the "UCSM" column and "UCS_" table prefix.</p>
+
+<p>Also for the purposes of this script, UCS object databases will have a compound primary key - UCSM and Dn. I'm manually creating this constraint  for now, but will probably add something to the script to deal with primary keys in the future.</p>
+
+<h4 id="populatingthetable">Populating the Table</h4>
+
+<p>I discovered an interesting problem at this point - as the hash object may contain key-value pairs that are not text or numbers, we can't just dump everything in the object into the database. To determine which key-value pairs will be pushed to the database, we query the database's schema and parse the resulting column names. </p>
+
+<pre><code class="language-powershell"># Query for this table's columns
+$query   = "SELECT * FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'UCS_$tableName';"
+$columns = Get-ODBCData -query $query
+
+# Dump the column names into an array
+$props   = $columns.column_name
+</code></pre>
+
+<p>As those names were derived from the first object's hash keys we should be able to easily pull the information and pull only the <code>$props</code> from each inventory object (Blades, etc).</p>
+
+<p>Now that we know which properties correspond to the database table's columns, we can loop through each item and do one of three actions: <strong>Insert</strong>, <strong>Update</strong>, or <strong>Nothing</strong>. If the item doesn't exist in the database, we craft an insert statement. Alternatively, if the item exists already in the database (again, based on that compound primary key), we check to see if the database matches the item. If it does, nothing happens. If there are differences, only the differences are updated.</p>
+
+<pre><code class="language-powershell">Foreach ($item in $ucsfulldump[$ucs].Inventory["$tableName"])  
+{
+    $dbQuery = $Null
+
+    # Check of this thing exists (Primary Key = Dn &amp; UCSM)
+    $exists = Get-ODBCData -query "SELECT * from `"UCS_$tableName`" WHERE `"Dn`" LIKE '$($item["Dn"])' AND `"UCSM`" LIKE '$ucs'"
+    if ($exists)
+    {
+        # Assume it's identical
+        $identical = $true
+        $diffProps = @()
+        #write-host -ForegroundColor Green "This already exists"
+        # Go through each property in this item, and compare properties
+        foreach ($prop in $($exists |gm -MemberType Properties |select -ExpandProperty Name))
+        {
+            # If this item, and the existing entry are not identical AND the property is not UCSM (UCSM only exists in the database)
+            if (($item[$prop] | Select -First 1) -notlike $exists.$prop -and $prop -notmatch "UCSM")
+            {
+                $identical = $false
+                $diffProps += $prop
+            }
+        }
+
+        # If we're not identical, we need to update
+        if (!$identical)
+        {
+            #Update this shit.
+            Write-host -ForegroundColor Magenta "This item already exists, however properties are different. We need to update things for $ucs &gt;&gt; $tablename &gt;&gt; $($item["Dn"]): $diffProps"
+            $dbQuery = "UPDATE `"UCS_$tableName`" SET "
+            foreach ($diffProp in $diffProps)
+            {
+                $dbQuery += "`"$diffProp`" = '$($item["$diffProp"])',"
+            }
+            $dbQuery = $dbQuery.Substring(0,$dbQuery.Length - 1) + " WHERE `"Dn`" LIKE '$($item["Dn"])' AND `"UCSM`" LIKE '$ucs'"
+
+        }
+    }
+    # This item doesn't exist in the database, time to add it
+    else
+    {
+
+        # Start off the insert query specifying the table name and properties/columns
+        $dbQuery = "INSERT INTO public.`"UCS_$tableName`" (`"$($props -join '", "')`") VALUES ('"
+
+        # Go through each property and add this Item's corresponding property
+        Foreach ($property in $props)
+        {
+            if ($item["$property"] -match "'")
+            {
+                Write-Host -ForegroundColor Green "Ooops, found a `"'`" in: $($item["$property"])"
+                $dbQuery += $($item["$property"]).Replace("'","''")+"', '"
+            }
+            if ($item["$property"].count -gt 1)
+            {
+                write-host "SHIT MORE THAN ONE! $($item["$property"]), using the first one"
+                $dbQuery += [string]$($item["$property"] | Select -First 1)+"', '"
+
+            }
+            else
+            {
+                $dbQuery += [string]$($item["$property"])+"', '"
+            }
+        }
+
+
+
+        # Bad addition leads to an extraneous ", '", take that off and add the closing parenthesis
+        $dbQuery = $dbQuery.Substring(0,$dbQuery.Length - 6)
+        $dbQuery = $dbQuery + " '$UCS');"
+
+        #Double Check the insert query
+        #$insertQuery
+    }
+
+    if ($dbQuery)
+    {
+        $output = Set-ODBCData -query $dbQuery
+    }
+</code></pre>
+
+<p>At this point, we have a pretty solid script that works well and is <strong><em>relatively</em></strong> generic - at least generic enough that we can take it and massage it to take in VMware inventory (see a future update). Unfortunately, I need more information to complete my inventory database - specifically the Blade VIC information. In the next post, I'll show how I handle this wrinkle. In the meanwhile, the script up to this point is available as a gist on my <a href="https://gist.github.com/pezhore/a74c7cefc56cacd9ab67">github</a>.</p>
+        </section>
+
+<div class="tags">
+Tagged in: <a href="../tag/powershell/">PowerShell</a>, <a href="../tag/postgres/">Postgres</a>, <a href="../tag/inventory-database/">Inventory Database</a>, <a href="../tag/cisco/">Cisco</a>
+</div>
+
+        <section class="share">
+
+            <a class="icon-twitter icon-share" href="https://twitter.com/share?text=PostgreSQL%20%2B%20PowerShell&amp;url=http://blog.briankmarsh.com/postgresql-powershell-part-1/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+    <span class="hidden">Twitter</span>
+
+    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="34px" height="34px" viewbox="289 289 34 34" enable-background="new 289 289 34 34" xml:space="preserve">
+    <g>
+      <g>
+        <path d="M312.861,302.819c0-0.162-0.003-0.321-0.011-0.48c0.691-0.515,1.291-1.159,1.765-1.896
+          c-0.634,0.285-1.314,0.476-2.03,0.556c0.729-0.45,1.29-1.168,1.555-2.031c-0.684,0.415-1.44,0.711-2.244,0.865
+          c-0.645-0.733-1.563-1.2-2.581-1.217c-1.951-0.032-3.534,1.618-3.534,3.685c0,0.293,0.031,0.579,0.092,0.854
+          c-2.94-0.189-5.545-1.719-7.288-4.026c-0.304,0.553-0.479,1.198-0.479,1.891c0,1.309,0.624,2.473,1.573,3.159
+          c-0.581-0.026-1.125-0.202-1.602-0.49c0,0.016,0,0.032,0,0.048c0,1.83,1.219,3.363,2.836,3.721
+          c-0.297,0.084-0.61,0.128-0.931,0.127c-0.229-0.002-0.449-0.026-0.665-0.073c0.449,1.5,1.755,2.595,3.302,2.631
+          c-1.21,1.004-2.735,1.604-4.39,1.599c-0.285,0-0.567-0.019-0.844-0.054c1.565,1.074,3.422,1.699,5.419,1.699
+          C309.307,313.386,312.861,307.728,312.861,302.819z"></path>
+        <path d="M322,306c0-8.836-7.164-16-16-16c-8.836,0-16,7.164-16,16c0,8.836,7.164,16,16,16C314.836,322,322,314.836,322,306z
+           M291.455,306c0-8.034,6.512-14.545,14.545-14.545c8.033,0,14.546,6.512,14.546,14.545c0,8.033-6.513,14.546-14.546,14.546
+          C297.966,320.546,291.455,314.033,291.455,306z"></path>
+      </g>
+    </g>
+    </svg>
+</a>
+
+<a class="icon-facebook icon-share" href="https://www.facebook.com/sharer/sharer.php?u=http://blog.briankmarsh.com/postgresql-powershell-part-1/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+    <span class="hidden">Facebook</span>
+    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="34px" height="34px" viewbox="289 289 34 34" enable-background="new 289 289 34 34" xml:space="preserve">
+    <g>
+      <g>
+        <path d="M322,306c0-8.836-7.164-16-16-16c-8.836,0-16,7.164-16,16c0,8.836,7.164,16,16,16C314.836,322,322,314.836,322,306z
+           M291.455,306c0-8.034,6.512-14.545,14.545-14.545c8.033,0,14.546,6.512,14.546,14.545c0,8.033-6.513,14.546-14.546,14.546
+          C297.966,320.546,291.455,314.033,291.455,306z"></path>
+        <path d="M306.614,315.235V306h3.047l0.481-3.061h-3.528v-1.534c0-0.799,0.262-1.561,1.407-1.561h2.291v-3.054h-3.252
+          c-2.735,0-3.481,1.8-3.481,4.296v1.852h-1.876V306h1.876v9.235H306.614L306.614,315.235z"></path>
+      </g>
+    </g>
+    </svg>
+</a>
+
+<a class="icon-google-plus icon-share" href="https://plus.google.com/share?url=http://blog.briankmarsh.com/postgresql-powershell-part-1/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+    <span class="hidden">Google+</span>
+
+    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="34px" height="34px" viewbox="289 289 34 34" enable-background="new 289 289 34 34" xml:space="preserve">
+    <g>
+      <g>
+        <path d="M308.256,311.033c0-1.57-0.909-2.344-1.91-3.186l-0.819-0.638c-0.25-0.203-0.591-0.477-0.591-0.977
+          s0.342-0.819,0.637-1.114c0.955-0.75,1.91-1.546,1.91-3.229c0-1.729-1.092-2.639-1.614-3.071l0,0h1.409l1.455-0.819h-4.686
+          c-1.228,0-2.773,0.182-4.071,1.251c-0.977,0.841-1.455,2.001-1.455,3.047c0,1.773,1.365,3.571,3.775,3.571
+          c0.228,0,0.477-0.023,0.729-0.045c-0.113,0.273-0.227,0.5-0.227,0.887c0,0.704,0.364,1.138,0.682,1.547
+          c-1.022,0.068-2.934,0.182-4.343,1.046c-1.343,0.795-1.751,1.956-1.751,2.774c0,1.684,1.593,3.253,4.89,3.253
+          C306.186,315.331,308.256,313.17,308.256,311.033z M303.366,305.233c-1.956,0-2.844-2.525-2.844-4.048
+          c0-0.592,0.114-1.205,0.5-1.683c0.364-0.455,1.001-0.752,1.593-0.752c1.888,0,2.865,2.548,2.865,4.185
+          c0,0.411-0.045,1.138-0.568,1.661C304.548,304.96,303.935,305.232,303.366,305.233z M303.389,314.375
+          c-2.434,0-4.003-1.159-4.003-2.773s1.456-2.16,1.957-2.342c0.956-0.318,2.183-0.365,2.388-0.365c0.227,0,0.34,0,0.522,0.023
+          c1.729,1.228,2.479,1.842,2.479,3.002C306.731,313.329,305.572,314.375,303.389,314.375z"></path>
+        <polygon points="308.461,306.615 310.924,306.615 310.924,309.076 312.154,309.076 312.154,306.615 314.615,306.615 
+          314.615,305.385 312.154,305.385 312.154,302.924 310.924,302.924 310.924,305.385 308.461,305.385     "></polygon>
+        <path d="M322,306c0-8.836-7.164-16-16-16c-8.836,0-16,7.164-16,16c0,8.836,7.164,16,16,16C314.836,322,322,314.836,322,306z
+           M291.455,306c0-8.034,6.512-14.545,14.545-14.545c8.033,0,14.546,6.512,14.546,14.545c0,8.033-6.513,14.546-14.546,14.546
+          C297.966,320.546,291.455,314.033,291.455,306z"></path>
+      </g>
+    </g>
+    </svg>
+</a>
+
+
+
+<a class="icon-tumblr icon-share" href="http://www.tumblr.com/share/link?url=http://blog.briankmarsh.com/postgresql-powershell-part-1/&amp;name=PostgreSQL%20%2B%20PowerShell" onclick="window.open(this.href, 'tumblr-share', 'width=490,height=530');return false;">
+    <span class="hidden">Tumblr</span>
+
+    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="34px" height="34px" viewbox="308 308 34 34" enable-background="new 308 308 34 34" xml:space="preserve">
+    <g>
+      <path d="M325.98,319.787v-4.009h-2.587c-0.059,0.149-0.089,0.324-0.089,0.504c-0.028,0.087-0.058,0.15-0.058,0.239
+        c-0.268,1.483-1.039,2.523-2.349,3.089c-0.386,0.177-0.741,0.205-1.127,0.177v3.235h1.901c0.03,4.546,0.03,6.892,0.03,7.01
+        c0,0.09,0,0.179,0,0.271c0.238,1.986,1.276,3.176,3.119,3.621c0.741,0.208,1.543,0.297,2.345,0.297
+        c1.039-0.029,2.051-0.207,3.062-0.535v-3.8c-0.594,0.176-1.132,0.325-1.604,0.472c-0.923,0.27-1.693,0.092-2.32-0.502
+        c-0.058-0.09-0.147-0.209-0.178-0.327c-0.087-0.476-0.145-0.979-0.145-1.457v-5.049h4.125v-3.235H325.98z"></path>
+    </g>
+    <g>
+      <g>
+        <path d="M341,325c0-8.836-7.164-16-16-16s-16,7.164-16,16c0,8.836,7.164,16,16,16S341,333.836,341,325z M310.455,325
+          c0-8.034,6.512-14.545,14.545-14.545s14.546,6.512,14.546,14.545c0,8.033-6.513,14.546-14.546,14.546S310.455,333.033,310.455,325
+          z"></path>
+      </g>
+    </g>
+    </svg>
+
+
+</a>
+
+        </section>
+
+
+
+        <section class="post__author clearfix">
+
+
+            <figure class="author__image">
+                <a class="img" href="../author/brian/" style="background-image: url(http://www.gravatar.com/avatar/5a6084d9aae0913236bc5ca2dffb0714?s&amp;)"><span class="hidden">Brian Marsh's Picture</span></a>
+            </figure>
+
+
+
+
+
+
+            <section class="author__bio">
+                <h4><a href="../author/brian/">Brian Marsh</a></h4>
+
+                    <p>Read <a href="../author/brian/">more posts</a> by this author.</p>
+                <div class="author__meta">
+                    
+                    
+                </div>
+            </section>
+
+
+
+        </section>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'example'; // required: replace example with your forum shortname
+    var disqus_identifier = '';
+ 
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a> 
+
+    </article>
+</main>
+
+<aside class="read-next clearfix">
+
+    <a class="read-next-story next" href="../domoticz/">
+
+        <section class="post">
+            <h2>Domoticz &amp; Home Automation</h2>
+            <p>When I moved into my new townhome, one of the first purchases I made was a 2nd generation Nest…</p>
+        </section>
+    </a>
+
+    <a class="read-next-story prev" href="../moving-home-lab-status-and-report/">
+        <section class="post">
+            <h2>Moving, Home Lab Status, and PowerShell Reporting</h2>
+            <p>Wow, so a lot to cover today. I recently moved out of my parents basement and into my own…</p>
+        </section>
+    </a>
+</aside>
+
+
+
+    </div>
+
+
+    <footer class="site-footer clearfix">
+        <section class="site-footer__block">
+            <div class="copyright"><a href="http://escritor.ozywuli.com">Escritor</a> © 2016 | Proudly published with <a href="https://ghost.org">Ghost</a></div>
+            <div class="madeby">Made by <a href="http://ozywuli.com">Ozy Wu-Li</a></div>
+
+
+        </section>
+    </footer>
+
+    
+
+
+    <script type="text/javascript" src="../assets/js/main.js?v=99eecd12bd"></script>
+
+
+</body>
